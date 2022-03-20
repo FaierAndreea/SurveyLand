@@ -1,0 +1,12 @@
+.top-row {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+
+    height: 4rem;
+    background-image: linear-gradient(rgba(27, 27, 20, 0.9),rgba(27, 27, 20, 0.6),rgba(27, 27, 20, 0.1));
+    text-align: center;
+    font-family: 'Lobster', cursive;
+    font-size: 2rem;
+    color: rgb(124, 92, 177);
+}
