@@ -4,8 +4,9 @@ using Models;
 
 namespace IPL
 {
-    public class SurveyContext : DbContext
+    public class SurveyContext : DbContext 
     {
+        public SurveyContext(){}
         public SurveyContext(DbContextOptions<SurveyContext> options) : base(options)
         {
         }
