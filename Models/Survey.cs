@@ -12,6 +12,5 @@ namespace Models
         public string? Description { get; set; }
         public string? Picture { get; set; }
         public List<Question>? Questions { get; set; }
-        public List<Answer>? Answers { get; set; }
     }
 }

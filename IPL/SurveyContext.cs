@@ -1,4 +1,6 @@
+using System.Reflection;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Microsoft.Extensions.Configuration;
 using Models;
 
@@ -15,17 +17,10 @@ namespace IPL
         public DbSet<Question> Questions { get; set; }
         public DbSet<Answer> Answers { get; set; }
 
-        
-
-        protected override void OnConfiguring(DbContextOptionsBuilder options) {
-            var configuration = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json")
-                .Build();
-
-            var connectionString = configuration.GetConnectionString("DefaultConnection");
-            options.UseSqlite(connectionString);
+        protected override void OnConfiguring(DbContextOptionsBuilder opitionsBuilder) {
         }
 
+        // protected override void OnModelCreating(ModelBuilder modelBuilder){
+        // }
     }
 }
