@@ -1,4 +1,5 @@
 using IPL;
+using IPL.Repos;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -11,6 +12,8 @@ builder.Services.AddControllers();
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<SurveyContext>(x => x.UseSqlite(connectionString),
         ServiceLifetime.Transient);
+
+builder.Services.AddScoped<SurveyRepository>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

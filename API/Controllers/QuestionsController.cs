@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using IPL;
+using IPL.Repos;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Models;
@@ -14,16 +15,15 @@ namespace API.Controllers
     [Route("api/[controller]")]
     public class QuestionsController : Controller
     {
-        private readonly SurveyContext _context;
-        public QuestionsController(SurveyContext context)
+        private readonly SurveyRepository _repo;
+        public QuestionsController(SurveyRepository repository)
         {
-            _context = context;
+            _repo = repository;
         }
 
         [HttpGet]
-        public ActionResult<List<Question>> GetQurstion() {
-            var question = _context.Questions.ToList();
-            return Ok(question);
+        public async Task<ActionResult<List<Question>>> GetQurstions() {
+            return Ok(await _repo.GetListOfQuestionsAsync());
         } 
     }
 }
