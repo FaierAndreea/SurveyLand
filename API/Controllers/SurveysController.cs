@@ -16,5 +16,9 @@ namespace API.Controllers {
         public async Task<ActionResult<List<Survey>>> GetSurveyListAsync() {
             return Ok(await _repo.GetSurveysAsync());
         }
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Survey>> GetSurveyByIdAsync(int id) {
+            return Ok(await _repo.GetSurveyByIdAsync(id));
+        }
     }
 }
