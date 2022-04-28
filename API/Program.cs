@@ -4,8 +4,21 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
+var apiCorsPolicy = "ApiCorsPolicy";
 
 // Add services to the container.
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: apiCorsPolicy,
+                      builder =>
+                      {
+                          builder.WithOrigins("http://localhost:4001", "https://localhost:4001")
+                            .AllowAnyHeader()
+                            .AllowAnyMethod()
+                            .AllowCredentials();
+                      });
+});
 
 builder.Services.AddControllers();
 
@@ -29,6 +42,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors(apiCorsPolicy);
 
 app.UseAuthorization();
 
