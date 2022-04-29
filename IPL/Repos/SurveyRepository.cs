@@ -20,7 +20,7 @@ namespace IPL.Repos
             return await _context.Questions.ToListAsync();
         }
         public async Task<List<Survey>> GetSurveysAsync() {
-            return await _context.Surveys.Include(x => x.Questions).ToListAsync();
+            return await _context.Surveys.ToListAsync();
         }
         public async Task<Survey> GetSurveyByIdAsync(int surveyId) {
             return await _context.Surveys.Where(x => x.Id == surveyId).Include(x => x.Questions).FirstOrDefaultAsync();

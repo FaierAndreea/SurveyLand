@@ -1,19 +1,25 @@
 @page "/survey/{SurveyId:int}"
 @inject HttpClient Http
 
-<div style="height: 100vh; background-image: url(@survey.Picture); background-size: cover;">
-    <TopBar ComponentName=@survey.Title />
-    This is survery @SurveyId - @survey.Id 
-</div>
+@if(survey!=null){
+    <div style="height: 100vh; background-image: url(@survey.Picture); background-size: cover;">
+        <TopBar ComponentName=@survey.Title />
+        This is survery @SurveyId - @survey.Id 
+    </div>
+}
 
 @code {
-    [Parameter]
-    public int SurveyId { get; set; }
-
+    [Parameter] public int SurveyId { get; set; } = 0;
     private Models.Survey survey;
+    private int currentId = 0;
 
-    protected override async Task OnInitializedAsync() {
-        survey = await Http.GetFromJsonAsync<Models.Survey>("https://localhost:5001/api/Surveys/"+SurveyId);
+    protected async override Task OnParametersSetAsync()
+    {
+        if (!this.SurveyId.Equals(this.currentId))
+        {
+            survey = await Http.GetFromJsonAsync<Models.Survey>("https://localhost:5001/api/Surveys/" + SurveyId);
+            this.currentId = this.SurveyId;
+        }
     }
 
 }
