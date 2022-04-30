@@ -1,10 +1,14 @@
 @page "/survey/{SurveyId:int}"
 @inject HttpClient Http
+@inject NavigationManager Navigation
 
 @if(survey!=null){
     <div style="height: 100vh; background-image: url(@survey.Picture); background-size: cover;">
         <TopBar ComponentName=@survey.Title />
-        This is survery @SurveyId - @survey.Id 
+        <div class="details">
+            <p>@survey.Description</p>
+            <button class="btn btn-outline-light" onclick="@Navigate">Click to start</button>
+        </div>
     </div>
 }
 
@@ -21,5 +25,8 @@
             this.currentId = this.SurveyId;
         }
     }
-
+    public void Navigate() {
+        var url = "questions/"+SurveyId;
+        Navigation.NavigateTo(url);
+    }
 }

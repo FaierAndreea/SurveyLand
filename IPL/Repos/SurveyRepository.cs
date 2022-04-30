@@ -25,5 +25,25 @@ namespace IPL.Repos
         public async Task<Survey> GetSurveyByIdAsync(int surveyId) {
             return await _context.Surveys.Where(x => x.Id == surveyId).Include(x => x.Questions).FirstOrDefaultAsync();
         }
+        public async Task<List<Answer>> GetAllAnswersAsync() {
+            return await _context.Answers.ToListAsync();
+        }
+        public async Task<Answer> GetAnswerByIdAsync(int answerId) {
+            return await _context.Answers.Where(x => x.Id == answerId).FirstOrDefaultAsync();
+        }
+
+        public async Task<List<Answer>> AddAnswersAsync(List<Answer> answers) {
+            foreach(Answer answer in answers) {
+                await _context.Answers.AddAsync(answer);
+            }
+            await _context.SaveChangesAsync();
+            return answers;
+        }
+
+        //public async Task<Answer> AddOneAnswer(Answer a) {
+        //    await _context.Answers.AddAsync(a);
+        //    await _context.SaveChangesAsync();
+        //    return a;
+        //}
     }
 }
