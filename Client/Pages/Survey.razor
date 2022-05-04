@@ -7,15 +7,20 @@
         <TopBar ComponentName=@survey.Title />
         <div class="details">
             <p>@survey.Description</p>
-            <button class="btn btn-outline-light" onclick="@Navigate">Click to start</button>
+            <button class="btn btn-outline-light" onclick="@ShowQuestions">Click to start</button>
         </div>
     </div>
+    @if(showQuestions == true) {
+        <Questions Survey=survey></Questions>
+    }
 }
 
 @code {
-    [Parameter] public int SurveyId { get; set; } = 0;
+    [Parameter] 
+    public int SurveyId { get; set; } = 0;
     private Models.Survey survey;
     private int currentId = 0;
+    private bool showQuestions = false;
 
     protected async override Task OnParametersSetAsync()
     {
@@ -25,8 +30,7 @@
             this.currentId = this.SurveyId;
         }
     }
-    public void Navigate() {
-        var url = "questions/"+SurveyId;
-        Navigation.NavigateTo(url);
+    private void ShowQuestions() {
+        showQuestions = true;
     }
 }
