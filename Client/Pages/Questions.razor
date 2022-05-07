@@ -1,21 +1,27 @@
 ﻿@using Models
 @inject HttpClient Http
 
-<h3>QUesti0ns</h3>
-
 @if (Survey != null) {
     <EditForm Model=@result OnValidSubmit=FormSubmitted>
         <ObjectGraphDataAnnotationsValidator />
         @for (var i = 0; i < Survey.Questions.Count; i++) {
             var local = i;
             var question = Survey.Questions[local];
-            <div>@question.Statement</div>
+            <div class="statement">@question.Statement</div>
             <InputRadioGroup @bind-Value=result.Answers[local].Option class="form-control">
-                <InputRadio Value=1 />@question.Option1
-                <InputRadio Value=2 />@question.Option2
+                <div class="options d-flex justify-content-around">
+                    <div>
+                        <InputRadio Value=1 />@question.Option1
+                    </div>
+                    <div>
+                        <InputRadio Value=2 />@question.Option2
+                    </div>
+                </div>
             </InputRadioGroup>
         }
-        <input type="submit" value="Submit" class="btn btn-primary" />
+        <div class="d-flex justify-content-center">
+            <input type="submit" value="Submit" class="btn btn-primary btn-lg" />
+        </div>
     </EditForm>
 }
 
