@@ -5,7 +5,7 @@
 
 @if (Survey != null) {
     <EditForm Model=@result OnValidSubmit=FormSubmitted>
-        <DataAnnotationsValidator/>
+        <ObjectGraphDataAnnotationsValidator />
         @for (var i = 0; i < Survey.Questions.Count; i++) {
             var local = i;
             var question = Survey.Questions[local];
@@ -38,6 +38,7 @@
         }
     }
     public class Result {
-        public List<Answer> Answers ;
+        [ValidateComplexType]
+        public List<Answer> Answers { get; set;}
     }
 }
