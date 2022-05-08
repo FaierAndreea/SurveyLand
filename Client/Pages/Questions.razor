@@ -1,5 +1,6 @@
 ﻿@using Models
 @inject HttpClient Http
+@inject NavigationManager Nav
 
 @if (Survey != null) {
     <EditForm Model=@result OnValidSubmit=FormSubmitted>
@@ -38,9 +39,19 @@
             }
         } 
     }
-    public void FormSubmitted() {
-        foreach(var item in result.Answers) {
-            Console.WriteLine(item.Option);
+    public async Task FormSubmitted() {
+        try {
+            //var json = System.Text.Json.JsonSerializer.Serialize(result.Answers);
+            //var content = new StringContent(json);
+            //await Http.PostAsync("https://localhost:5001/api/Answers", content);
+            await Http.PostAsJsonAsync<List<Answer>>("https://localhost:5001/api/Answers", result.Answers);
+            Nav.NavigateTo("success");
+            foreach (var item in result.Answers) {
+                Console.WriteLine(item.Option);
+            }
+        }
+        catch (Exception e) {
+            Console.WriteLine("Fail");
         }
     }
     public class Result {

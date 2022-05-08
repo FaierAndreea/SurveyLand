@@ -18,7 +18,7 @@ namespace API.Controllers {
             return Ok(await _repository.GetAllAnswersAsync());
         }
         [HttpPost]
-        public async Task<ActionResult> AddOneAnswerAsync(List<Answer> answers) {
+        public async Task<ActionResult> AddAnswersAsync(List<Answer> answers) {
             var a = await _repository.AddAnswersAsync(answers);
             return Ok(a);
         }
