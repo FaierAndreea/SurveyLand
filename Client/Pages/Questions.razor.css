@@ -1,8 +1,13 @@
 ﻿.statement {
     font-size: x-large;
     text-align: center;
+    margin-top: 10px;
 }
 .options {
     margin-top: 5%;
     margin-bottom: 10%;
+}
+hr {
+    width: 80%;
+    margin: auto;
 }

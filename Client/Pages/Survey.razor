@@ -2,7 +2,7 @@
 @inject HttpClient Http
 @inject NavigationManager Navigation
 
-@if(survey!=null){
+@if (survey != null) {
     <div style="height: 100vh; background-image: url(@survey.Picture); background-size: cover;">
         <TopBar ComponentName=@survey.Title />
         <div class="details">
@@ -10,27 +10,18 @@
             <button class="btn btn-outline-light" onclick="@ShowQuestions">Click to start</button>
         </div>
     </div>
-    @if(showQuestions == true) {
-        <Questions Survey=survey></Questions>
-    }
 }
 
 @code {
-    [Parameter] 
+    [Parameter]
     public int SurveyId { get; set; } = 0;
     private Models.Survey survey;
-    private int currentId = 0;
-    private bool showQuestions = false;
 
-    protected async override Task OnParametersSetAsync()
-    {
-        if (!this.SurveyId.Equals(this.currentId))
-        {
-            survey = await Http.GetFromJsonAsync<Models.Survey>("https://localhost:5001/api/Surveys/" + SurveyId);
-            this.currentId = this.SurveyId;
-        }
+    protected async override Task OnParametersSetAsync() {
+        survey = await Http.GetFromJsonAsync<Models.Survey>("https://localhost:5001/api/Surveys/" + SurveyId);
     }
+
     private void ShowQuestions() {
-        showQuestions = true;
+        Navigation.NavigateTo($"/questions/{survey.Id}");
     }
 }

@@ -1,9 +1,12 @@
-﻿@using Models
+﻿@page "/questions/{SurveyId:int}"
+
+@using Models
 @inject HttpClient Http
-@inject NavigationManager Nav
+@inject NavigationManager NavManager
 
 @if (Survey != null) {
-    <EditForm Model=@result OnValidSubmit=FormSubmitted>
+    <TopBar ComponentName=@title />
+    <EditForm Model=@result OnValidSubmit=FormSubmitted style="margin-top:10px">
         <ObjectGraphDataAnnotationsValidator />
         @for (var i = 0; i < Survey.Questions.Count; i++) {
             var local = i;
@@ -19,8 +22,9 @@
                     </div>
                 </div>
             </InputRadioGroup>
+            <hr/>
         }
-        <div class="d-flex justify-content-center">
+        <div class="d-flex justify-content-center mt-1 mb-1">
             <input type="submit" value="Submit" class="btn btn-primary btn-lg" />
         </div>
     </EditForm>
@@ -28,34 +32,35 @@
 
 @code {
     [Parameter]
+    public int SurveyId { get; set; } = 0;
     public Models.Survey Survey { get; set; }
     Result result = new Result();
-    protected override void OnInitialized()
-    {
+    string title;
+
+    protected async override Task OnParametersSetAsync() {
+        Survey = await Http.GetFromJsonAsync<Models.Survey>("https://localhost:5001/api/Surveys/" + SurveyId);
+
         result.Answers = new List<Answer>();
-        if(Survey != null) {
+        if (Survey != null) {
             foreach (var question in Survey.Questions) {
-                result.Answers.Add(new Answer() {QuestionId = question.Id});
+                result.Answers.Add(new Answer() { QuestionId = question.Id });
             }
-        } 
+        }
+        title = Survey.Title + " Questions";
     }
+
     public async Task FormSubmitted() {
         try {
-            //var json = System.Text.Json.JsonSerializer.Serialize(result.Answers);
-            //var content = new StringContent(json);
-            //await Http.PostAsync("https://localhost:5001/api/Answers", content);
             await Http.PostAsJsonAsync<List<Answer>>("https://localhost:5001/api/Answers", result.Answers);
-            Nav.NavigateTo("success");
-            foreach (var item in result.Answers) {
-                Console.WriteLine(item.Option);
-            }
+            NavManager.NavigateTo("success");
         }
         catch (Exception e) {
-            Console.WriteLine("Fail");
+            Console.WriteLine("Fail: " + e.Message);
         }
     }
+
     public class Result {
         [ValidateComplexType]
-        public List<Answer> Answers { get; set;}
+        public List<Answer> Answers { get; set; }
     }
 }
