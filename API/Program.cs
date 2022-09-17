@@ -1,7 +1,7 @@
 using IPL;
+using IPL.Identity;
 using IPL.Repos;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 var apiCorsPolicy = "ApiCorsPolicy";
@@ -23,8 +23,10 @@ builder.Services.AddCors(options =>
 builder.Services.AddControllers();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var identityString = builder.Configuration.GetConnectionString("IdentityConnection");
 builder.Services.AddDbContext<SurveyContext>(x => x.UseSqlite(connectionString),
         ServiceLifetime.Transient);
+builder.Services.AddDbContext<AppIdentityContext>(x => x.UseSqlite(identityString));
 
 builder.Services.AddScoped<SurveyRepository>();
 

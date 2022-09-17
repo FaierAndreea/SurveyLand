@@ -17,10 +17,18 @@ namespace IPL
         public DbSet<Question> Questions { get; set; }
         public DbSet<Answer> Answers { get; set; }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder opitionsBuilder) {
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
         }
-
-        // protected override void OnModelCreating(ModelBuilder modelBuilder){
-        // }
+        protected override void OnModelCreating(ModelBuilder builder) {
+            base.OnModelCreating(builder);
+            SeedData(builder);
+        }
+        private static void SeedData(ModelBuilder builder) {
+            var surveys = new Survey[] {
+                new Survey { Id = 1, Title = "Brands", Description = "What do you think about these brands that compete? Tell us your preferences"}
+            };
+            
+            builder.Entity<Survey>().HasData(surveys);
+        }
     }
 }
