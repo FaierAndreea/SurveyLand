@@ -2,11 +2,10 @@ using IPL;
 using IPL.Identity;
 using IPL.Repos;
 using Microsoft.EntityFrameworkCore;
+using Models.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 var apiCorsPolicy = "ApiCorsPolicy";
-
-// Add services to the container.
 
 builder.Services.AddCors(options =>
 {
@@ -20,17 +19,14 @@ builder.Services.AddCors(options =>
                       });
 });
 
-builder.Services.AddControllers();
-
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 var identityString = builder.Configuration.GetConnectionString("IdentityConnection");
 builder.Services.AddDbContext<SurveyContext>(x => x.UseSqlite(connectionString),
         ServiceLifetime.Transient);
 builder.Services.AddDbContext<AppIdentityContext>(x => x.UseSqlite(identityString));
 
-builder.Services.AddScoped<SurveyRepository>();
+builder.Services.AddScoped<ISurveyRepository, SurveyRepository>();
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -47,8 +43,12 @@ app.UseHttpsRedirection();
 
 app.UseCors(apiCorsPolicy);
 
-app.UseAuthorization();
+app.MapGet("/api/Surveys", async (ISurveyRepository repo) => { return await repo.GetSurveysAsync(); });
+app.MapGet("/api/Surveys/{id:int}", async (int id, ISurveyRepository repo) => { return await repo.GetSurveyByIdAsync(id); });
 
-app.MapControllers();
+app.MapGet("/api/Questions", async (ISurveyRepository repo) => { return await repo.GetListOfQuestionsAsync(); });
+
+app.MapGet("/api/Answers", async (ISurveyRepository repo) => { return await repo.GetAllAnswersAsync(); });
+app.MapPost("/api/Answers", async (List<Models.Answer> answers, ISurveyRepository repo) => { return await repo.AddAnswersAsync(answers); });
 
 app.Run();

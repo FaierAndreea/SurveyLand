@@ -1,8 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Models;
+using Models.Interfaces;
 
 namespace IPL.Repos;
-public class SurveyRepository
+public class SurveyRepository : ISurveyRepository
 {
     private readonly SurveyContext _context;
 
