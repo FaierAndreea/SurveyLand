@@ -27,9 +27,8 @@ public static class BusinessLogicEndpoints {
     public static async Task<List<Answer>> GetAnswersAsync(ISurveyRepository repo) {
         return await repo.GetAllAnswersAsync();
     }
-    public static async Task<List<Answer>> AddAnswersAsync(List<Models.Answer> answers, ISurveyRepository repo, HttpContext context) {
-        // add userEmail here
-        var email = context.User.FindFirstValue(ClaimTypes.Email);
+    public static async Task<List<Answer>> AddAnswersAsync(List<Models.Answer> answers, ISurveyRepository repo, ClaimsPrincipal user) {
+        var email = user.FindFirstValue(ClaimTypes.Email);
         foreach(var answer in answers) {
             answer.UserEmail = email;
         }
