@@ -11,6 +11,7 @@ using Models;
 using Models.DTOs;
 using Models.Interfaces;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -96,13 +97,17 @@ app.UseCors(apiCorsPolicy);
 app.MapBusinessLogicEndpoints();
 
 app.MapPost("/api/security/getToken", [AllowAnonymous] async (UserManager<IdentityUser> userMgr, UserLoginDTO user) => {
-    var identityUsr = await userMgr.FindByNameAsync(user.UserName);
-    if (await userMgr.CheckPasswordAsync(identityUsr, user.Password)) {
+    var identityUser = await userMgr.FindByEmailAsync(user.Email);
+    if (await userMgr.CheckPasswordAsync(identityUser, user.Password)) {
         var issuer = builder.Configuration["Jwt:Issuer"];
         var audience = builder.Configuration["Jwt:Audience"];
         var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]));
         var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-        var token = new JwtSecurityToken(issuer: issuer, audience: audience, signingCredentials: credentials);
+        var claims = new List<Claim> {
+            new Claim(ClaimTypes.Email, identityUser.Email),
+            new Claim(ClaimTypes.GivenName, identityUser.UserName)
+        };;
+        var token = new JwtSecurityToken(issuer: issuer, audience: audience, signingCredentials: credentials, claims: claims);
         var tokenHandler = new JwtSecurityTokenHandler();
         var stringToken = tokenHandler.WriteToken(token);
         return Results.Ok(stringToken);
