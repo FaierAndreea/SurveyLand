@@ -14,7 +14,7 @@ namespace IPL.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "6.0.4");
+            modelBuilder.HasAnnotation("ProductVersion", "6.0.9");
 
             modelBuilder.Entity("Models.Answer", b =>
                 {
@@ -27,6 +27,9 @@ namespace IPL.Migrations
 
                     b.Property<int>("QuestionId")
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("UserEmail")
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -58,6 +61,40 @@ namespace IPL.Migrations
                     b.HasIndex("SurveyId");
 
                     b.ToTable("Questions");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Option1 = "Coca-Cola",
+                            Option2 = "	Pepsi",
+                            Statement = "Which one is better?",
+                            SurveyId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Option1 = "Nike",
+                            Option2 = "Reebok",
+                            Statement = "Which one would you get?",
+                            SurveyId = 1
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Option1 = "Apple",
+                            Option2 = "Samsung",
+                            Statement = "Which do you think is best?",
+                            SurveyId = 1
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Option1 = "Small and intimate wedding",
+                            Option2 = "Large wedding",
+                            Statement = "Which do you prefer?",
+                            SurveyId = 2
+                        });
                 });
 
             modelBuilder.Entity("Models.Survey", b =>
@@ -78,6 +115,20 @@ namespace IPL.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Surveys");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Description = "What do you think about these brands that compete? Tell us your preferences",
+                            Title = "Brands"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Description = "Try answering these questions regarding relationships",
+                            Title = "Relationship"
+                        });
                 });
 
             modelBuilder.Entity("Models.Answer", b =>

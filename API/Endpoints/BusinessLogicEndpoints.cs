@@ -1,5 +1,7 @@
 using Models;
 using Models.Interfaces;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace API.Endpoints;
 
@@ -11,7 +13,7 @@ public static class BusinessLogicEndpoints {
         app.MapGet("/api/Questions", GetQuestionsAsync);
 
         app.MapGet("/api/Answers", GetAnswersAsync).RequireAuthorization();
-        app.MapPost("/api/Answers", AddAnswersAsync);
+        app.MapPost("/api/Answers", AddAnswersAsync).RequireAuthorization();
     }
     public static async Task<List<Survey>> GetSurveysAsync(ISurveyRepository repo) {
         return await repo.GetSurveysAsync();
@@ -25,7 +27,12 @@ public static class BusinessLogicEndpoints {
     public static async Task<List<Answer>> GetAnswersAsync(ISurveyRepository repo) {
         return await repo.GetAllAnswersAsync();
     }
-    public static async Task<List<Answer>> AddAnswersAsync(List<Models.Answer> answers, ISurveyRepository repo) {
+    public static async Task<List<Answer>> AddAnswersAsync(List<Models.Answer> answers, ISurveyRepository repo, ClaimsPrincipal user) {
+        var email = user.FindFirstValue(ClaimTypes.Email);
+        if(email is null) throw new Exception("User email not found");
+        foreach(var answer in answers) {
+            answer.UserEmail = email;
+        }
         return await repo.AddAnswersAsync(answers);
     } 
 }
