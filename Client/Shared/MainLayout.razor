@@ -1,4 +1,9 @@
-﻿@inherits LayoutComponentBase
+﻿@using System.Security.Claims
+@using Services
+@inherits LayoutComponentBase
+@* @inject AuthenticationStateProvider AuthenticationStateProvider *@
+
+@* So the plan is to start the auth from here...? *@
 
 <div class="page">
     <div class="sidebar">
@@ -6,12 +11,55 @@
     </div>
 
     <main>
-        @* <div class="top-row px-4">
-            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
-        </div> *@
-
         <article>
             @Body
         </article>
     </main>
 </div>
+
+@* @code {
+    private string authMessage = "";
+    private string surnameMessage;
+    private IEnumerable<Claim> claims = Enumerable.Empty<Claim>();
+
+    protected override async Task OnInitializedAsync() {
+        await GetClaimsPrincipalData();
+    }
+        
+    private async Task GetClaimsPrincipalData()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity.IsAuthenticated)
+        {
+            authMessage = $"{user.Identity.Name} is authenticated.";
+            claims = user.Claims;
+            surnameMessage = 
+                $"Surname: {user.FindFirst(c => c.Type == ClaimTypes.Surname)?.Value}";
+        }
+        else
+        {
+            authMessage = "The user is NOT authenticated.";
+        }
+    }
+} *@
+
+@* @code {
+    [CascadingParameter] private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+    private async Task LogUserAuthenticationState()
+    {
+        var authState = await authenticationStateTask;
+        var user = authState.User;
+
+        if (user.Identity.IsAuthenticated)
+        {
+            Console.WriteLine($"User {user.Identity.Name} is authenticated.");
+        }
+        else
+        {
+            Console.WriteLine("User is NOT authenticated.");
+        }
+    }
+} *@
