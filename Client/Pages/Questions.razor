@@ -50,13 +50,10 @@
     }
 
     public async Task FormSubmitted() {
-        try {
-            await Http.PostAsJsonAsync<List<Answer>>("https://localhost:5001/api/Answers", result.Answers);
+        var response = await Http.PostAsJsonAsync<List<Answer>>("https://localhost:5001/api/Answers", result.Answers);
+        System.Console.WriteLine(response.StatusCode);
+        if(response.IsSuccessStatusCode) 
             NavManager.NavigateTo("success");
-        }
-        catch (Exception e) {
-            Console.WriteLine("Fail: " + e.Message);
-        }
     }
 
     public class Result {
