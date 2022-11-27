@@ -1,17 +1,13 @@
 using API.Endpoints;
+using API.Extras;
 using IPL;
 using IPL.Repos;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Models;
-using Models.DTOs;
 using Models.Interfaces;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -28,7 +24,7 @@ builder.Services.AddCors(options => {
 });
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-builder.Services.AddDbContext<SurveyContext>(x => x.UseSqlite(connectionString),
+builder.Services.AddDbContext<ISurveyContext,SurveyContext>(x => x.UseSqlite(connectionString),
         ServiceLifetime.Transient);
 builder.Services.AddDbContext<AppIdentityDbContext>(x => x.UseSqlite(connectionString));
 
@@ -81,6 +77,8 @@ builder.Services.AddAuthentication(o => {
 });
 builder.Services.AddAuthorization();
 
+builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(JwtOptions.Position));
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -95,38 +93,7 @@ app.UseHttpsRedirection();
 app.UseCors(apiCorsPolicy);
 
 app.MapBusinessLogicEndpoints();
-
-app.MapPost("/api/security/getToken", [AllowAnonymous] async (UserManager<IdentityUser> userMgr, UserLoginDTO user) => {
-    var identityUser = await userMgr.FindByEmailAsync(user.Email);
-    if (await userMgr.CheckPasswordAsync(identityUser, user.Password)) {
-        var issuer = builder.Configuration["Jwt:Issuer"];
-        var audience = builder.Configuration["Jwt:Audience"];
-        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]));
-        var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-        var claims = new List<Claim> {
-            new Claim(ClaimTypes.Email, identityUser.Email),
-            new Claim(ClaimTypes.GivenName, identityUser.UserName)
-        };;
-        var token = new JwtSecurityToken(issuer: issuer, audience: audience, signingCredentials: credentials, claims: claims);
-        var tokenHandler = new JwtSecurityTokenHandler();
-        var stringToken = tokenHandler.WriteToken(token);
-        return Results.Ok(stringToken);
-    }
-    else {
-        return Results.Unauthorized();
-    }
-}).WithTags("Security");
-app.MapPost("/api/security/createUser", [AllowAnonymous] async (UserManager<IdentityUser> userMgr, UserRegisterDTO user) => {
-    var identityUser = new IdentityUser() {
-        UserName = user.UserName,
-        Email = user.Email
-    };
-    var result = await userMgr.CreateAsync(identityUser, user.Password);
-    if (result.Succeeded) 
-        return Results.Ok();
-    else 
-        return Results.BadRequest();
-}).WithTags("Security");
+app.MapSecurityEndpoints();
 
 app.UseAuthentication();
 app.UseAuthorization();

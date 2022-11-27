@@ -5,9 +5,9 @@ using Models.Interfaces;
 namespace IPL.Repos;
 public class SurveyRepository : ISurveyRepository
 {
-    private readonly SurveyContext _context;
+    private readonly ISurveyContext _context;
 
-    public SurveyRepository(SurveyContext context)
+    public SurveyRepository(ISurveyContext context)
     {
         _context = context;
     }
@@ -34,10 +34,4 @@ public class SurveyRepository : ISurveyRepository
         await _context.SaveChangesAsync();
         return answers;
     }
-
-    //public async Task<Answer> AddOneAnswer(Answer a) {
-    //    await _context.Answers.AddAsync(a);
-    //    await _context.SaveChangesAsync();
-    //    return a;
-    //}
 }

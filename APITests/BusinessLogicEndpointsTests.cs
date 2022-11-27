@@ -1,4 +1,6 @@
-﻿namespace APITests;
+﻿using System.Security.Claims;
+
+namespace APITests;
 public class BusinessLogicEndpointsTests {
     [Fact]
     public async Task GetSurveysAsyncReturnsAllFromDatabase() {
@@ -59,8 +61,8 @@ public class BusinessLogicEndpointsTests {
         Assert.Equal(1, result.Id);
     }
 
-    // [Fact]
-    public async Task AddAnswersAsyncAddsListOfAnswersInDatabase() {
+    [Fact]
+    public async Task AddAnswersAsyncAddsListOfUsersAnswersInDatabase() {
         // Arrange
         var mock = new Mock<ISurveyRepository>();
 
@@ -75,16 +77,23 @@ public class BusinessLogicEndpointsTests {
         mock.Setup(m => m.AddAnswersAsync(answersToAdd))
             .Callback<List<Answer>>(a => answers.AddRange(a))
             .ReturnsAsync(answers);
+        
+        var claims = new List<Claim>()  { 
+            new Claim(ClaimTypes.Email, "test@email.com"),
+        };
+        var identity = new ClaimsIdentity(claims, "TestAuthType");
+        var claimsPrincipal = new ClaimsPrincipal(identity);
 
-        // Act
-        // var result = await BusinessLogicEndpoints.AddAnswersAsync(answersToAdd, mock.Object);
+        //Act
+        var result = await BusinessLogicEndpoints.AddAnswersAsync(answersToAdd, mock.Object, claimsPrincipal);
 
-        // Assert
-        // Assert.NotEmpty(result);
-        // Assert.Collection(result, a => {
-        //     Assert.Equal(1, a.Id);
-        //     Assert.Equal(1, a.QuestionId);
-        //     Assert.Equal(1, a.Option);
-        // });
+        //Assert
+        Assert.NotEmpty(result);
+        Assert.Collection(result, a => {
+            Assert.Equal(1, a.Id);
+            Assert.Equal(1, a.QuestionId);
+            Assert.Equal(1, a.Option);
+            Assert.Equal("test@email.com", a.UserEmail);
+        });
     }
 }

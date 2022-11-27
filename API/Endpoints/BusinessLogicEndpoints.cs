@@ -1,6 +1,5 @@
 using Models;
 using Models.Interfaces;
-using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
 namespace API.Endpoints;

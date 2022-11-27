@@ -1,27 +1,26 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Microsoft.AspNetCore.Authorization;
+using API.Extras;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using Models;
 using Models.DTOs;
 
 namespace API.Endpoints;
 
 public static class SecurityEndpoints {
     public static void MapSecurityEndpoints(this WebApplication app) {
-            app.MapPost("/api/security/getToken", GetToken).AllowAnonymous();
-            app.MapPost("/api/security/createUser", CreateUser).AllowAnonymous();
-        }
-    //this needs a tryParse for complex types
-    internal static async Task<IResult> GetToken(this WebApplicationBuilder builder, UserManager<IdentityUser> userMgr,[FromQuery] UserLoginDTO user) {
+            app.MapPost("/api/Security/GetToken", GetToken).AllowAnonymous();
+            app.MapPost("/api/Security/CreateUser", CreateUser).AllowAnonymous();
+    }
+    internal static async Task<IResult> GetToken(IOptions<JwtOptions> jwtOptions, UserManager<IdentityUser> userMgr,[FromBody] UserLoginDTO user) {
         var identityUser = await userMgr.FindByEmailAsync(user.Email);
         if (await userMgr.CheckPasswordAsync(identityUser, user.Password)) {
-            var issuer = builder.Configuration["Jwt:Issuer"];
-            var audience = builder.Configuration["Jwt:Audience"];
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]));
+            var issuer = jwtOptions.Value.Issuer;
+            var audience = jwtOptions.Value.Audience;
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Value.Key));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
             var claims = new List<Claim> {
                 new Claim(ClaimTypes.Email, identityUser.Email),
@@ -36,7 +35,7 @@ public static class SecurityEndpoints {
             return Results.Unauthorized();
         }
     } 
-    internal static async Task<IResult> CreateUser(UserManager<IdentityUser> userMgr,[FromQuery] UserRegisterDTO user) {
+    internal static async Task<IResult> CreateUser(UserManager<IdentityUser> userMgr,[FromBody] UserRegisterDTO user) {
         var identityUser = new IdentityUser() {
             UserName = user.UserName,
             Email = user.Email
